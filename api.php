@@ -1,20 +1,29 @@
-# php-gateway
-> Make a REST API development easy with PHP 7.4+
+<?php
 
-## Presentation
-This module's goal is to let you focus on your API development while writing clean code.
-It uses, and requires, typing and documentation to correctly work.
+/*
+ * This is a sample usage of the gateway module.
+ *
+ * It is brought to be used with the following Apache configuration:
+ * ```
+ * RewriteEngine On
+ * RewriteRule ^api/v[0-9]/.*$ api.php
+ * ```
+ * This configuration is written in the `.htaccess` file of this depot.
+ *
+ * There is no dynamic update of the dataset, the car creation
+ * route is only there for the example.
+ */
 
-For now, there is no production optimizations but they are planned.
+require_once("gateway/gateway.php");
+use \gateway\ApiDocumentationRoute;
+use \gateway\SerializableObject;
+use \gateway\Route;
+use \gateway\Router;
+use \gateway\exceptions\NotFoundException;
+use \gateway\responses\Response;
+use \gateway\responses\JsonResponse;
 
 
-## Example
-The following examples are extracts of the `api.php` file.
-
-### SerializableObject example
-Serializable objects can be used for object output or input in your API. Here is a definition example:
-
-```php
 class Car extends SerializableObject
 {
     protected int $id;
@@ -38,15 +47,15 @@ class Car extends SerializableObject
         return $this->price;
     }
 }
-```
 
-### Route definition
-Here is a route to list the cars on `GET` request on the `/car` API path. The real path will be `/api/v1/car` because we
-don't override the version parameter in the route and the `/api` prefix is defined in the router in the `api.php` file.
 
-This route take multiple optional parameters and will return a list of the `Car` serializable object defined before.
+$cars = array(
+    1 => new Car(1, "Ford", 45000.0),
+    2 => new Car(2, "Toyota", 35000.0),
+    3 => new Car(3, "Chevrolet", 20000.0)
+);
 
-```php
+
 class CarRoute extends Route
 {
     protected static string $path = "/car";
@@ -81,25 +90,10 @@ class CarRoute extends Route
         );
     }
 
-    // ...
-}
-```
-
-### SerializableObject as input data
-SerializableObject can be used as input data simply by specifying them as input parameter. As it is serializable, it is
-also considered like a valid `Response`.
-
-```php
-class CarRoute extends Route
-{
-    protected static string $path = "/car";
-
-    // ...
-
     /**
      * Create a car.
      *
-     * @param Car $car  The new car's data.
+     * @param Car $object  The new car's data.
      */
     public function put(Car $car) : Response
     {
@@ -107,13 +101,8 @@ class CarRoute extends Route
         return $car;
     }
 }
-```
 
-### Parameters in route path
-Variable parameter can also be specified in the route path with the `{name}` special sequence. They must be defined
-as a class attribute of the route.
 
-```php
 class CarInfoRoute extends Route
 {
     protected static string $path = "/car/{id}";
@@ -138,25 +127,16 @@ class CarInfoRoute extends Route
             throw new NotFoundException();
         }
 
+        // TODO: SerializableObject should inherit JsonResponse to be directly returned.
         return $cars[$this->id];
     }
 }
-```
 
-### Auto-generated documentation
-The module has a predefined unmapped route `ApiDocumentationRoute` which auto generate an HTML documentation of the API.
-You can use it by extending it and mapping it to a path. You can also easily override how the output is formatted.
 
-```php
+// Map the documentation to a route
 class DocRoute extends ApiDocumentationRoute
 {
     protected static string $path = "/";
 }
-```
 
-### Trigger the routing
-To give life to your API, call the `handleRequest` static method of the `Router` class where you want.
-
-```php
 Router::handleRequest("/api", 1);
-```

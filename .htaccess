@@ -1,0 +1,3 @@
+# Apache rewriting rules
+RewriteEngine On
+RewriteRule ^api/v[0-9]/.*$ api.php
