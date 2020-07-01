@@ -48,11 +48,6 @@ class Router
         $method = strtolower($method);
         $route = $this->findRoute($path);
 
-        if (is_null($route))
-        {
-            throw new NotFoundException();
-        }
-
         $params = array();
         $routeClass = get_class($route);
         $routeDefinition = $routeClass::getRouteDefinition();
@@ -115,6 +110,11 @@ class Router
             }
         }
 
+        if (is_null($routeInstance))
+        {
+            throw new NotFoundException();
+        }
+
         return $routeInstance;
     }
 
@@ -123,10 +123,10 @@ class Router
         $apiVersion = $apiDefaultVersion;
         $path = $_SERVER["REQUEST_URI"];
 
-        if (preg_match('/^'.preg_quote($apiPrefix, "/").'\/v(?P<version>[0-9]+)(?P<uri>\/[^?]*)/', $path, $matches))
+        if (preg_match('/^'.preg_quote($apiPrefix, "/").'\/v(?P<version>[0-9]+)(?P<uri>(?:\/[^?]*)?)/', $path, $matches))
         {
             $apiVersion = intval($matches["version"]);
-            $path = $matches["uri"];
+            $path = strlen($matches["uri"]) == 0 ? "/" : $matches["uri"];
         }
 
         $router = new Router($apiVersion);

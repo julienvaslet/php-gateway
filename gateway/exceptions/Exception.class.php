@@ -2,7 +2,10 @@
 // Copyright (c) 2020 Julien Vaslet
 
 namespace gateway\exceptions;
-// TODO: Check imports
+
+require_once(__DIR__."/../responses/JsonResponse.class.php");
+
+use gateway\responses\JsonResponse;
 
 
 class Exception extends \Exception
