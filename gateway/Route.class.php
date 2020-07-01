@@ -2,7 +2,8 @@
 // Copyright (c) 2020 Julien Vaslet
 
 namespace gateway;
-// TODO: Check imports
+
+require_once(__DIR__."/SerializableObject.class.php");
 
 
 abstract class Route
