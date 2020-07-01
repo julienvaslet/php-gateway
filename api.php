@@ -6,7 +6,7 @@
  * It is brought to be used with the following Apache configuration:
  * ```
  * RewriteEngine On
- * RewriteRule ^api/v[0-9]/.*$ api.php
+ * RewriteRule ^api/v[0-9](/.*)?$ api.php
  * ```
  * This configuration is written in the `.htaccess` file of this depot.
  *
@@ -127,7 +127,6 @@ class CarInfoRoute extends Route
             throw new NotFoundException();
         }
 
-        // TODO: SerializableObject should inherit JsonResponse to be directly returned.
         return $cars[$this->id];
     }
 }
