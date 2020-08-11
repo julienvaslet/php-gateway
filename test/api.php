@@ -14,7 +14,7 @@
  * route is only there for the example.
  */
 
-require_once("gateway/gateway.php");
+require_once("../gateway/gateway.php");
 use \gateway\ApiDocumentationRoute;
 use \gateway\SerializableObject;
 use \gateway\Route;
