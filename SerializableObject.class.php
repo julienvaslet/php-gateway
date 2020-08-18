@@ -3,11 +3,10 @@
 
 namespace gateway;
 
-require_once(__DIR__."/responses/Response.class.php");
-use \gateway\responses\Response;
+require_once(__DIR__."/Serializable.interface.php");
 
 
-abstract class SerializableObject extends Response
+abstract class SerializableObject implements Serializable
 {
     public static function getSerializableAttributes() : array
     {
@@ -31,7 +30,7 @@ abstract class SerializableObject extends Response
         {
             if (in_array($attribute, $attributes))
             {
-                $data[$attribute] = SerializableObject::serializeData($value);
+                $data[$attribute] = static::serializeData($value);
             }
         }
 
@@ -45,19 +44,19 @@ abstract class SerializableObject extends Response
 
     public static final function serializeData($data)
     {
-        if ($data instanceof SerializableObject)
+        if ($data instanceof Serializable)
         {
             $data = $data->serialize();
         }
         else if (is_array($data))
         {
-            $data = array_map(array("\gateway\SerializableObject", "serializeData"), $data);
+            $data = array_map(array(static::class, "serializeData"), $data);
         }
 
         return $data;
     }
 
-    public static final function deserialize(array $data) : SerializableObject
+    public static final function deserialize(array $data) : Serializable
     {
         $attributes = static::getSerializableAttributes();
         $instance = (new \ReflectionClass(static::class))->newInstanceWithoutConstructor();

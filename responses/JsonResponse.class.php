@@ -3,28 +3,41 @@
 
 namespace gateway\responses;
 
-require_once(__DIR__."/Response.class.php");
-require_once(__DIR__."/../SerializableObject.class.php");
+require_once(__DIR__."/Response.interface.php");
+require_once(__DIR__."/../Serializable.interface.php");
 
-use \gateway\SerializableObject;
+use \gateway\Serializable;
 
 
-class JsonResponse extends Response
+class JsonResponse implements Response
 {
     protected array $data;
 
     public function __construct(array $data)
     {
-        parent::__construct();
         $this->data = $data;
     }
 
     public function serializeResponse() : string
     {
         return json_encode(
-            SerializableObject::serializeData(
+            static::serializeData(
                 $this->data
             )
         );
+    }
+
+    protected static function serializeData($data)
+    {
+        if ($data instanceof Serializable)
+        {
+            $data = $data->serialize();
+        }
+        else if (is_array($data))
+        {
+            $data = array_map(array(static::class, "serializeData"), $data);
+        }
+
+        return $data;
     }
 }

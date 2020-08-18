@@ -4,8 +4,8 @@
 namespace gateway;
 
 require_once(__DIR__."/Route.class.php");
-require_once(__DIR__."/SerializableObject.class.php");
-require_once(__DIR__."/responses/Response.class.php");
+require_once(__DIR__."/Serializable.interface.php");
+require_once(__DIR__."/responses/Response.interface.php");
 require_once(__DIR__."/responses/HtmlResponse.class.php");
 
 use \gateway\responses\Response;
@@ -149,8 +149,14 @@ abstract class ApiDocumentationRoute extends Route
 
         foreach (get_declared_classes() as $class)
         {
-            if (is_subclass_of($class, "\gateway\SerializableObject"))
+            if (is_subclass_of($class, "\gateway\Serializable"))
             {
+                $reflectionClass = new \ReflectionClass($class);
+                if ($reflectionClass->isAbstract())
+                {
+                    continue;
+                }
+
                 $serializableObjects[] = $class;
             }
         }

@@ -3,7 +3,7 @@
 
 namespace gateway;
 
-require_once(__DIR__."/SerializableObject.class.php");
+require_once(__DIR__."/Serializable.interface.php");
 
 
 abstract class Route
@@ -273,7 +273,7 @@ abstract class Route
 
             default:
             {
-                if (is_subclass_of($type, "\gateway\SerializableObject"))
+                if (is_subclass_of($type, "\gateway\Serializable"))
                 {
                     $value = $type::deserialize($value);
                 }

@@ -3,16 +3,15 @@
 
 namespace gateway\responses;
 
-require_once(__DIR__."/Response.class.php");
+require_once(__DIR__."/Response.interface.php");
 
 
-class HtmlResponse extends Response
+class HtmlResponse implements Response
 {
     protected string $content;
 
     public function __construct(string $content)
     {
-        parent::__construct();
         $this->content = $content;
     }
 
